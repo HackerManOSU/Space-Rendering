@@ -1,0 +1,111 @@
+<base href="https://docs.lume.io/examples/hello-world/example.html" />
+<link rel="stylesheet" href="style.css">
+<script src="../../importmap.js"></script>
+
+<!-- Watch the moon's shadow on the Earth! -->
+
+<lume-scene id="scene" webgl shadowmap-type="pcfsoft">
+	<lume-element3d align-point="0.5 0.5">
+		<lume-camera-rig distance="600" min-distance="90" max-distance="2000"></lume-camera-rig>
+
+		<lume-sphere
+			id="stars"
+			texture="./galaxy_starfield.png"
+			receive-shadow="false"
+			has="basic-material"
+			sidedness="back"
+			size="4000 4000 4000"
+			mount-point="0.5 0.5 0.5"
+			color="white"
+		></lume-sphere>
+
+		<lume-element3d rotation="0 -50 0">
+			<lume-element3d rotation="10 0 0">
+
+				<!--Set debug="true" to see the visuals for debugging the
+				directional light and its shadow camera. -->
+				<lume-directional-light
+					id="light"
+					debug="false"
+					size="0 0"
+					position="0 0 1800"
+					color="white"
+					intensity="2"
+					distance="10000"
+					xxx="Here we adjust the shadow camera size so it fits around the earth and moon, making the shadow as crisp as possible without increasing the shadow texture size."
+					shadow-camera-near="1500"
+					shadow-camera-far="2100"
+					shadow-camera-top="100"
+					shadow-camera-right="100"
+					shadow-camera-bottom="-100"
+					shadow-camera-left="-100"
+				></lume-directional-light>
+			</lume-element3d>
+		</lume-element3d>
+
+		<!-- Earth rotation -->
+		<!-- Wrapper elements to rotate the Earth sphere to the desired initial orientation. -->
+		<lume-element3d>
+			<lume-element3d rotation="0 180 0">
+				<!-- Earth -->
+				<!-- Earth is a sphere with an earth texture applied. -->
+				<lume-sphere
+					id="earth"
+					texture="./earthmap1k.jpg"
+					bump-map="./earthbump1k.jpg"
+					specular-map="./earthspec1k.jpg"
+					size="120 120 120"
+					mount-point="0.5 0.5 0.5"
+					color="white"
+				>
+					<!-- Clouds -->
+					<!-- Clouds are a sphere, slightly bigger than the Earth
+					sphere, with a mostly-transparent image of clouds used for
+					the texture. -->
+					<lume-sphere
+						id="clouds"
+						texture="./earthclouds.png"
+						opacity="0.7"
+						size="125 125 125"
+						mount-point="0.5 0.5 0.5"
+						align-point="0.5 0.5 0.5"
+						color="white"
+					></lume-sphere>
+				</lume-sphere>
+			</lume-element3d>
+
+			<!-- Moon rotation -->
+			<lume-element3d rotation="90 10 0">
+				<lume-element3d id="moonRotator" rotation="0 0 40">
+					<!-- Moon -->
+					<!-- Another sphere. -->
+					<lume-sphere
+						id="moon"
+						texture="./moon.jpg"
+						position="250"
+						size="5 5 5"
+						mount-point="0.5 0.5 0.5"
+						color="white"
+					></lume-sphere>
+				</lume-element3d>
+			</lume-element3d>
+		</lume-element3d>
+	</lume-element3d>
+</lume-scene>
+
+<script type="module">
+	import 'lume'
+
+	// will always start at the angle defined in the HTML.
+	let lastTime = performance.now()
+	let dt = 0
+	moonRotator.rotation = (x, y, z, time) => {
+		dt = time - lastTime
+		lastTime = time
+		return [x, y, z + dt * 0.01]
+	}
+
+	earth.rotation = (x, y, z, t) => [x, t * 0.01, z]
+	clouds.rotation = (x, y, z, t) => [x, -t * 0.003, z]
+</script>
+
